@@ -1,29 +1,26 @@
-# Containerizer
+# Pyeml
 
-Containerizer is a tool to run python functions in kubernetes containers
+Pyeml is a tool to measure the energy consumed by python functions based on the C library EML
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Containerizer.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Pyeml.
 
 ```bash
-pip install pip install git+https://github.com/dsuarezl/Containerizer
+pip install pip install git+https://github.com/dsuarezl/Pyeml
 ```
 
 ## Usage
 
 ```python
-from containerizer.containerizer import Containerize
+from pyeml import measure_decorator
 
+@measure_decorator
+def function(arg):
+    from time import sleep
+    sleep(arg)
 
-def printtext(args):
-    pass
-
-#Prints "hello world"
-x = Containerize(printtext, args=["Hola mundo"])
-x.start()
-print(x.join())
-
+print(function(1))
 
 ```
 
