@@ -22,6 +22,8 @@ classifiers = [
 "Homepage" = "https://github.com/dsuarezl/Containerizer"
 "Bug Tracker" = "https://github.com/dsuarezl/Containerizer"
 
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.package-data]
-eml = ["eml.cpython-39-x86_64-linux-gnu.so"]
+pyeml = ["eml.cpython-39-x86_64-linux-gnu.so"]
