@@ -22,8 +22,11 @@ classifiers = [
 "Homepage" = "https://github.com/dsuarezl/Containerizer"
 "Bug Tracker" = "https://github.com/dsuarezl/Containerizer"
 
-[tool.setuptools]
-include-package-data = true
-
 [tool.setuptools.packages.find]
-where = ["pyeml"]
+# scanning for namespace packages is true by default in pyproject.toml, so
+# you do NOT need to include the following line.
+namespaces = true
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pyeml.data" = ["*.so*"]
