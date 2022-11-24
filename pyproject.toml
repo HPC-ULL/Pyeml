@@ -25,5 +25,5 @@ classifiers = [
 [tool.setuptools]
 include-package-data = true
 
-[tool.setuptools.package-data]
-pyeml = ["eml.cpython-39-x86_64-linux-gnu.so"]
+[tool.setuptools.packages.find]
+where = ["pyeml"]

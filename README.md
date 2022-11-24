@@ -23,6 +23,7 @@ def function(arg):
 print(function(1))
 
 ```
+In order to get the data from some devices like rapl it may need privileged execution or "cap_sys_rawio" capabilities.
 
 
 ## License
