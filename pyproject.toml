@@ -1,7 +1,7 @@
 [build-system]
-requires = [ "setuptools>=61.0" ]
-
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
 
 [project]
 name = "pyeml"
@@ -19,8 +19,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/dsuarezl/Containerizer"
-"Bug Tracker" = "https://github.com/dsuarezl/Containerizer"
+"Homepage" = "https://github.com/dsuarezl/Pyeml"
+"Bug Tracker" = "https://github.com/dsuarezl/Pyeml"
 
 [tool.setuptools]
 include-package-data = true
