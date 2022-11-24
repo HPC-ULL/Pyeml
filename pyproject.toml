@@ -22,9 +22,9 @@ classifiers = [
 "Homepage" = "https://github.com/dsuarezl/Pyeml"
 "Bug Tracker" = "https://github.com/dsuarezl/Pyeml"
 
-[tool.setuptools]
-include-package-data = true
-
 [tool.setuptools.packages.find]
 namespaces = true
 where = ["src"]
+
+[tool.setuptools.package-data]
+"pyeml.lib" = ["*.so*"]
