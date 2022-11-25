@@ -1,6 +1,7 @@
 
 import sys
 import os
+
 sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
 from eml import measureCode
 
@@ -12,7 +13,7 @@ from typing import Callable, Iterable, Dict
 
 
 def measure_code(code : str , preparation_code : str = ""):
-    return measure_code(code=code, preparation_code=preparation_code)
+    return measureCode(code=code, preparation_code=preparation_code)
 
 
 def measure_function(function : Callable, args : Iterable = (), kwargs : Dict = {}, scope : any = None):
