@@ -3,7 +3,7 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
-from eml import measureCode
+from eml import measureCode, getDevices, shutdown
 
 from inspect import currentframe
 
@@ -11,9 +11,14 @@ import __main__ as main_module
 
 from typing import Callable, Iterable, Dict
 
+import atexit
+atexit.register(shutdown)
 
-def measure_code(code : str , preparation_code : str = ""):
-    return measureCode(code=code, preparation_code=preparation_code)
+def get_devices():
+    return  getDevices()
+
+def measure_code(code : str ):
+    return measureCode(code=code)
 
 
 def measure_function(function : Callable, args : Iterable = (), kwargs : Dict = {}, scope : any = None):
