@@ -2,6 +2,9 @@
 import sys
 import os
 
+
+
+
 sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
 from eml import measureCode, measureCodeInDevices, getDevices, shutdown
 
@@ -13,6 +16,11 @@ from typing import Callable, Iterable, Dict, Union
 
 import atexit
 atexit.register(shutdown)
+
+
+EML_LIB_PATH = "/usr/local/lib"
+os.environ["LD_LIBRARY_PATH"] = EML_LIB_PATH
+
 
 def get_devices():
     return  getDevices()
