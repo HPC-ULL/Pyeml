@@ -10,7 +10,7 @@ from setuptools import setup
 __version__ = "0.0.1"
 
 
-setup_helper = Pybind11Extension("pyeml",
+setup_helper = Pybind11Extension("eml",
         ["src/pyeml/lib/eml.cpp"],
         # Example: passing in the version to the compiled code
         define_macros = [('VERSION_INFO', __version__)],
