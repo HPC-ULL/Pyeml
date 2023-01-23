@@ -27,7 +27,7 @@ setup(
     description="Tool to measure energy consumption of python code",
     long_description="",
     ext_modules=[setup_helper],
-    packages = ["pyeml"],
+    packages = ["src/pyeml"],
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
     python_requires=">=3.7",
