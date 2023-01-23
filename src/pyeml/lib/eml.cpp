@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <eml.h>
 #include <iostream>
-#include <python3.9/Python.h>
+#include <Python.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;

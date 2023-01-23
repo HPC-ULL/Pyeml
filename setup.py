@@ -16,7 +16,7 @@ setup_helper = Pybind11Extension("pyeml",
         define_macros = [('VERSION_INFO', __version__)],
         )
 
-setup_helper._add_cflags(["-O3", "-shared" ,"-std=c++11" ,"-fPIC"])
+setup_helper._add_cflags(["-shared"])
 setup_helper._add_ldflags(["-leml" , "-lconfuse", "-Wl," ,"--as-needed",  "-lnvidia-ml" ,  "-Wl," , "--no-as-needed"])
 
 ext_modules = [
