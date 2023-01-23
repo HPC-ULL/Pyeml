@@ -17,9 +17,15 @@ if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
     os.environ["LD_LIBRARY_PATH"] = os.getenv('LD_LIBRARY_PATH',"") + ":" + EML_LIB_PATH
     print(f"Adding '{EML_LIB_PATH}' to LD_LIBRARY_PATH")
     try:
-        os.execve(os.path.realpath(__file__), sys.argv, os.environ)
-    except Exception as exc:
-        print(f'Failed re-exec: ({os.path.realpath(__file__), sys.argv, os.environ})', exc)
+        exe,arg = '',''
+        if(sys.argv[0] == ''): #interpreter
+            exe = sys.executable
+            arg = "import pyeml"
+        else:
+            exe = sys.argv[0]
+            arg = sys.argv
+    except Exception as e:
+        print(f'Failed re-exec: ({exe, arg})', e)
         sys.exit(1)
 
 
