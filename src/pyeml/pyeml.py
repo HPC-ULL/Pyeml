@@ -17,14 +17,13 @@ if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
     os.environ["LD_LIBRARY_PATH"] = os.getenv('LD_LIBRARY_PATH',"") + ":" + EML_LIB_PATH
     print(f"Adding '{EML_LIB_PATH}' to LD_LIBRARY_PATH")
     try:
+        sys.stdout.flush()
 
-        if(sys.argv[0] != ''):
-            sys.stdout.flush()
+        if(sys.argv[0] == ''): #interpreter
+            os.execl(sys.executable," ")
+        else:
             os.execl(sys.executable,sys.executable, *sys.argv)
 
-        
-    except OSError as e:
-        print(e)
     except Exception as e:
         print(f'Failed re-exec:', e)
         sys.exit(1)
