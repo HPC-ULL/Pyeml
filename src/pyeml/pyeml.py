@@ -2,12 +2,6 @@
 import sys
 import os
 
-
-
-
-sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
-from eml import measureCode, measureCodeInDevices, getDevices, shutdown
-
 from inspect import currentframe
 
 import __main__ as main_module
@@ -15,11 +9,14 @@ import __main__ as main_module
 from typing import Callable, Iterable, Dict, Union
 
 import atexit
-atexit.register(shutdown)
 
 
 EML_LIB_PATH = "/usr/local/lib"
 os.environ["LD_LIBRARY_PATH"] = EML_LIB_PATH
+
+sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
+from eml import measureCode, measureCodeInDevices, getDevices, shutdown
+atexit.register(shutdown)
 
 
 def get_devices():
