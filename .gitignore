@@ -1,6 +1,9 @@
 #project specific files
 pyeml.egg-info
 
+*.o
+*.so.*
+Makefile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

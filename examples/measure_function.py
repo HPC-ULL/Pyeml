@@ -5,4 +5,4 @@ def function(arg):
     sleep(arg)
 
 
-print(measure_function(function, args=(1,)))
+print(measure_function(function, args=(1,), devices=("rapl1","rapl0")))
