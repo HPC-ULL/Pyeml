@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
 
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11.setup_helpers import Pybind11Extension, build_ext, intree_extensions
 from setuptools import setup
 
 __version__ = "0.0.1"
 
-setup_helper = Pybind11Extension("eml",
+setup_helper = Pybind11Extension(
+        "eml",
         ["src/pyeml/lib/eml.cpp"],
         )
 
@@ -26,7 +27,7 @@ setup(
     description="Tool to measure energy consumption of python code",
     long_description="",
     ext_modules=[setup_helper],
-
+    packages = ["pyeml"],
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
     python_requires=">=3.7",
