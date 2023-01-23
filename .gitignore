@@ -2,7 +2,6 @@
 pyeml.egg-info
 
 *.o
-*.so.*
 Makefile
 
 # Byte-compiled / optimized / DLL files
