@@ -19,7 +19,7 @@ if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
     try:
         os.execve(os.path.realpath(__file__), sys.argv, os.environ)
     except Exception as exc:
-        print('Failed re-exec:', exc)
+        print(f'Failed re-exec: ({os.path.realpath(__file__), sys.argv, os.environ})', exc)
         sys.exit(1)
 
 
