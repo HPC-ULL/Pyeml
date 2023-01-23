@@ -15,6 +15,7 @@ EML_LIB_PATH = "/usr/local/lib"
 #Appending eml in LD_LIBRARY_PATH (if its needed)
 if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
     os.environ["LD_LIBRARY_PATH"] = os.getenv('LD_LIBRARY_PATH',"") + ":" + EML_LIB_PATH
+    print(f"Adding '{EML_LIB_PATH}' to LD_LIBRARY_PATH")
     try:
         os.execve(os.path.realpath(__file__), sys.argv, os.environ)
     except Exception as exc:
