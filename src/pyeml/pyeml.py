@@ -10,9 +10,17 @@ from typing import Callable, Iterable, Dict, Union
 
 import atexit
 
-
 EML_LIB_PATH = "/usr/local/lib"
-os.environ["LD_LIBRARY_PATH"] = EML_LIB_PATH
+
+#Appending eml in LD_LIBRARY_PATH (if its needed)
+if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
+    os.environ["LD_LIBRARY_PATH"] = os.getenv('LD_LIBRARY_PATH',"") + ":" + EML_LIB_PATH
+    try:
+        os.execve(os.path.realpath(__file__), sys.argv, os.environ)
+    except Exception as exc:
+        print('Failed re-exec:', exc)
+        sys.exit(1)
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__),"lib"))
 from eml import measureCode, measureCodeInDevices, getDevices, shutdown
