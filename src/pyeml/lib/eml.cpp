@@ -1,22 +1,107 @@
 #include <pybind11/pybind11.h>
 #include <eml.h>
 #include <iostream>
-#include <Python.h>
 #include <pybind11/stl.h>
+#include <pybind11/eval.h>
+#include <stdexcept>
 
 namespace py = pybind11;
 
-std::unordered_map<std::string, double> measureCodeInDevices(const char* code, const char* preparationCode, const std::set<std::string>* devices, const double conversion_factor) {
-    wchar_t *program = Py_DecodeLocale("measure", NULL);
+static std::vector<emlDevice_t*> eml_devices;
+static double _conversion_factor = 1;
 
-    Py_SetProgramName(program);
-    Py_Initialize();
+static bool initialized = false;
+
+void start(const std::set<std::string> devices, const double conversion_factor){
+
+    if(initialized){
+        throw std::runtime_error( "Pyeml already started" );
+    }
 
     emlInit();
+    initialized = true;
 
-    if ((preparationCode != NULL) && (preparationCode[0] != '\0')) {
-            PyRun_SimpleString(preparationCode);
+    _conversion_factor = conversion_factor;
+
+    if(devices.size() > 0){
+        size_t count;
+        emlDeviceGetCount(&count);
+        emlDevice_t* dev;
+        const char* devname; 
+
+        for (size_t i = 0; i < count; i++) {
+            emlDeviceByIndex(i, &dev);
+            emlDeviceGetName(dev, &devname);
+            if(devices.find(devname) != devices.end()){
+                eml_devices.push_back(dev);
+                emlDeviceStart(dev);
+            }
+        }
+
+    }else{
+        emlStart();
     }
+
+    py::gil_scoped_release release;
+}
+
+std::unordered_map<std::string, double> stop(){
+
+    size_t count;
+
+    if(eml_devices.empty()){
+        emlDeviceGetCount(&count);
+    }else{
+        count = eml_devices.size();
+    }
+
+    emlData_t* data[count];
+
+    if(eml_devices.empty()){
+        emlStop(data);
+    }else{
+        for(unsigned i = 0; i < eml_devices.size(); i++){
+            emlData_t* d[1];
+            emlDeviceStop(eml_devices[i],d);
+            data[i] = d[0];
+        }
+
+    }
+
+    emlDevice_t* dev;
+    const char* devname; 
+    
+    double consumed, elapsed;
+    std::unordered_map<std::string, double> output;
+
+    for(unsigned i = 0; i < count; i++){
+        
+        emlDataGetConsumed(data[i], &consumed);
+        emlDataGetElapsed(data[i], &elapsed);
+        emlDataFree(data[i]);
+
+        if(eml_devices.empty()){
+            emlDeviceByIndex(i, &dev);
+        }else{
+            dev = eml_devices[i];
+        }
+        emlDeviceGetName(dev, &devname);
+
+        output[devname] = consumed/_conversion_factor;
+    }
+
+    eml_devices.clear();
+    initialized = false;
+    py::gil_scoped_acquire acquire;
+
+
+    return output;
+}
+
+
+std::unordered_map<std::string, double> measureCodeInDevices(const char* code, const std::set<std::string>* devices, const double conversion_factor) {
+
+    emlInit();
 
     size_t count;
 
@@ -45,7 +130,7 @@ std::unordered_map<std::string, double> measureCodeInDevices(const char* code, c
         emlDeviceStart(eml_devices[i]);
     }
 
-    PyRun_SimpleString(code);
+    py::exec(code , py::module_::import("__main__").attr("__dict__"));
 
     for(unsigned i = 0; i < eml_devices.size(); i++){
         emlData_t* d[1];
@@ -68,17 +153,9 @@ std::unordered_map<std::string, double> measureCodeInDevices(const char* code, c
     return output;
 }
 
-std::unordered_map<std::string, double> measureCode(const char* code, const char* preparationCode, const double conversion_factor) {
-    wchar_t *program = Py_DecodeLocale("measure", NULL);
-
-    Py_SetProgramName(program);
-    Py_Initialize();
+std::unordered_map<std::string, double> measureCode(const char* code,  const double conversion_factor) {
 
     emlInit();
-
-    if ((preparationCode != NULL) && (preparationCode[0] != '\0')) {
-            PyRun_SimpleString(preparationCode);
-    }
 
     size_t count;
 
@@ -94,11 +171,9 @@ std::unordered_map<std::string, double> measureCode(const char* code, const char
 
     emlStart();
 
-    PyRun_SimpleString(code);
+    py::exec(code , py::module_::import("__main__").attr("__dict__"));
 
     emlStop(data);
-
-    // PyMem_RawFree(program);
 
     for(unsigned i = 0; i < count; i++){
         
@@ -199,8 +274,14 @@ PYBIND11_MODULE(eml, m) {
     m.def("getDevices", &getDevices, "Get devices names");
     m.def("shutdown", &shutdown, "shutdown eml");
 
-    m.def("measureCode", &measureCode, "A function to measure code energy consumption", py::arg("code"), py::arg("preparationCode") = "", py::arg("conversion_factor") = 1);
-    m.def("measureCodeInDevices", &measureCodeInDevices, "A function to measure code energy consumption", py::arg("code"), py::arg("preparationCode") = "", py::arg("devices"), py::arg("conversion_factor") = 1);
+    // m.def("init", &start, "init eml", py::arg("devices") = static_cast<std::set<std::string> *>(nullptr), py::arg("conversion_factor") = 1);
+
+    m.def("start", &start, "start eml", py::arg("devices") =  *(new std::set<std::string>), py::arg("conversion_factor") = 1);
+
+    m.def("stop", &stop, "stop eml");
+
+    m.def("measureCode", &measureCode, "A function to measure code energy consumption", py::arg("code"), py::arg("conversion_factor") = 1);
+    m.def("measureCodeInDevices", &measureCodeInDevices, "A function to measure code energy consumption", py::arg("code"), py::arg("devices"), py::arg("conversion_factor") = 1);
 
     m.def("measureCodeAndTime", &measureCodeAndTime, "A function to measure code energy consumption", py::arg("code"), py::arg("preparationCode") = "");
 }
