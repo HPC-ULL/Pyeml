@@ -15,7 +15,7 @@ setup_helper = Pybind11Extension(
 #, "-Wl,--as-needed",  "-lnvidia-ml" ,  "-Wl,--no-as-needed"
 
 setup_helper._add_cflags(["-shared"])
-setup_helper._add_ldflags(["-L/usr/local/lib", "-leml" ,"-lconfuse", "-std=c++11"])
+setup_helper._add_ldflags(["-L/usr/local/lib", "-leml" ,"-lconfuse", "-lnvidia-ml", "-std=c++11"])
 
 
 setup(
