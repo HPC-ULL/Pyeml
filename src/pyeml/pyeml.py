@@ -68,7 +68,6 @@ def measure_code(code : str , devices : Union[Iterable,None] = None, unit : Unio
         return measureCode(code, conversion_factor = conversion_factor)
 
 
-
 def measure_function(function : Callable, devices : Union[Iterable,None] = None, args : Iterable = (), kwargs : Dict = {}, scope : any = None,  unit : Union[Dict, None] = None):
 
     if scope is None: scope = currentframe().f_back.f_globals

@@ -19,17 +19,33 @@ pip install git+https://github.com/HPC-ULL/Pyeml
 ## Usage
 
 ```python
-from pyeml import measure_decorator
+from pyeml import  measure_energy
 
-@measure_decorator
+from pyeml.devices import nvml, rapl
+
+from pyeml.units import cal, uj
+
+@measure_energy(devices = ( rapl(0)), unit = uj)
 def function(arg):
     from time import sleep
     sleep(arg)
 
+
 print(function(1))
-#(None, {'rapl1': 18.844284057617188, 'rapl0': 19.9859619140625, 'nvml0': 21.09})
+#(None, {'rapl0': {'power': 18472015.380859375, 'elapsed': 1.0, 'consumed': 18472015.380859375}}, 1.001293775625527) 
+
+
+#    Returns a tuple of three elements:
+#
+#    1: Decorated function output
+#
+#    2: Energy measurements. Including average power, elapsed time of each 
+#    device and energy consumed.
+#
+#    3: Elapsed time of the full execution
 
 ```
+
 
 
 ## Suported devices
@@ -46,6 +62,7 @@ From [EML](https://github.com/HPC-ULL/eml) [docs](https://hpc-ull.github.io/eml/
 >* Schleifenbauer PDUs (through the Schleifenbauer socket API)
 >* Odroid-XU3 integrated sensors (through linux sysfs)
 >* Poznań Supercomputing and Networking Center Labee XML >* Interface (through its REST API)
+>* Beta support for PMlib
 >
 >EML automatically discovers necessary libraries and available devices at runtime.
 

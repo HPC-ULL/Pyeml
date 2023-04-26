@@ -45,8 +45,7 @@ void start(const std::set<std::string> devices, const double conversion_factor){
     py::gil_scoped_release release;
 }
 
-std::unordered_map<std::string, double> stop(){
-
+std::unordered_map<std::string, std::unordered_map<std::string,double>> stop(){
     size_t count;
 
     if(eml_devices.empty()){
@@ -72,7 +71,7 @@ std::unordered_map<std::string, double> stop(){
     const char* devname; 
     
     double consumed, elapsed;
-    std::unordered_map<std::string, double> output;
+    std::unordered_map<std::string, std::unordered_map<std::string,double>>  output;
 
     for(unsigned i = 0; i < count; i++){
         
@@ -87,7 +86,12 @@ std::unordered_map<std::string, double> stop(){
         }
         emlDeviceGetName(dev, &devname);
 
-        output[devname] = consumed/_conversion_factor;
+        std::unordered_map<std::string,double> deviceData;
+        deviceData["consumed"] = consumed/_conversion_factor;
+        deviceData["elapsed"] = elapsed;
+        deviceData["power"] = deviceData["consumed"]/elapsed;
+
+        output[devname] = deviceData;
     }
 
     eml_devices.clear();
@@ -98,8 +102,7 @@ std::unordered_map<std::string, double> stop(){
     return output;
 }
 
-
-std::unordered_map<std::string, double> measureCodeInDevices(const char* code, const std::set<std::string>* devices, const double conversion_factor) {
+std::unordered_map<std::string, std::unordered_map<std::string,double>> measureCodeInDevices(const char* code, const std::set<std::string>* devices, const double conversion_factor) {
 
     emlInit();
 
@@ -111,7 +114,7 @@ std::unordered_map<std::string, double> measureCodeInDevices(const char* code, c
     const char* devname; 
     
     double consumed, elapsed;
-    std::unordered_map<std::string, double> output;
+    std::unordered_map<std::string, std::unordered_map<std::string,double>>  output;
 
     std::vector<emlDevice_t*> eml_devices;
 
@@ -146,14 +149,21 @@ std::unordered_map<std::string, double> measureCodeInDevices(const char* code, c
 
         emlDeviceGetName(eml_devices[i], &devname);
 
-        output[devname] = consumed/conversion_factor;
+
+        std::unordered_map<std::string,double> deviceData;
+        deviceData["consumed"] = consumed/_conversion_factor;
+        deviceData["elapsed"] = elapsed;
+        deviceData["power"] = deviceData["consumed"]/elapsed;
+
+        output[devname] = deviceData;
+
     }
 
 
     return output;
 }
 
-std::unordered_map<std::string, double> measureCode(const char* code,  const double conversion_factor) {
+std::unordered_map<std::string, std::unordered_map<std::string,double>>  measureCode(const char* code,  const double conversion_factor) {
 
     emlInit();
 
@@ -165,7 +175,7 @@ std::unordered_map<std::string, double> measureCode(const char* code,  const dou
     const char* devname; 
     
     double consumed, elapsed;
-    std::unordered_map<std::string, double> output;
+    std::unordered_map<std::string, std::unordered_map<std::string,double>> output;
   
     emlData_t* data[count];
 
@@ -184,62 +194,13 @@ std::unordered_map<std::string, double> measureCode(const char* code,  const dou
         emlDeviceByIndex(i, &dev);
         emlDeviceGetName(dev, &devname);
 
-        output[devname] = consumed/conversion_factor;
-    }
-
-    return output;
-
-}
-
-
-std::unordered_map<std::string, std::unordered_map<std::string,double>> measureCodeAndTime(const char* code, const char* preparationCode) {
-    wchar_t *program = Py_DecodeLocale("measure", NULL);
-
-    Py_SetProgramName(program);
-    Py_Initialize();
-
-    emlInit();
-
-    if ((preparationCode != NULL) && (preparationCode[0] != '\0')) {
-            PyRun_SimpleString(preparationCode);
-    }
-
-
-    //allocate space for results
-    size_t count;
-    emlDeviceGetCount(&count);
-    emlData_t* data[count];
-    //start measuring energy consumption
-    emlStart();
-
-    PyRun_SimpleString(code);
-
-    emlStop(data);
-
-    PyMem_RawFree(program);
-
-    emlDevice_t* dev;
-    const char* devname;
-    double consumed, elapsed;
-    std::unordered_map<std::string, std::unordered_map<std::string,double>> output;
-
-
-    for(unsigned i = 0; i < count; i++) {
-        
-        emlDataGetConsumed(data[i], &consumed);
-        emlDataGetElapsed(data[i], &elapsed);
-        emlDataFree(data[i]);
-
-        emlDeviceByIndex(i, &dev);
-        emlDeviceGetName(dev, &devname);
-
         std::unordered_map<std::string,double> deviceData;
-        deviceData["consumed"] = consumed;
+        deviceData["consumed"] = consumed/_conversion_factor;
         deviceData["elapsed"] = elapsed;
+        deviceData["power"] = deviceData["consumed"]/elapsed;
 
         output[devname] = deviceData;
-        // std::cout<< devname << " " <<output[devname].first << " " << output[devname].second  <<"\n";
-        // printf("The device '%s' consumed %g J in %g s\n", devname , consumed, elapsed);
+
     }
 
     return output;
@@ -283,5 +244,5 @@ PYBIND11_MODULE(eml, m) {
     m.def("measureCode", &measureCode, "A function to measure code energy consumption", py::arg("code"), py::arg("conversion_factor") = 1);
     m.def("measureCodeInDevices", &measureCodeInDevices, "A function to measure code energy consumption", py::arg("code"), py::arg("devices"), py::arg("conversion_factor") = 1);
 
-    m.def("measureCodeAndTime", &measureCodeAndTime, "A function to measure code energy consumption", py::arg("code"), py::arg("preparationCode") = "");
+    // m.def("measureCodeAndTime", &measureCodeAndTime, "A function to measure code energy consumption", py::arg("code"), py::arg("preparationCode") = "");
 }

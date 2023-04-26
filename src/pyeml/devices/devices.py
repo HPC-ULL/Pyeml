@@ -20,3 +20,6 @@ def odroid(device_number):
 def labee(device_number):
     return f"labee{device_number}" 
 
+def pmlib(device_number, device_outlet = 0):
+    return f"pmlib0{device_number}_outlet{device_outlet}" 
+
