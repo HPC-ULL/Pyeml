@@ -1,6 +1,10 @@
 
 def rapl(device_number):
-    return f"rapl{device_number}"
+    return f"rapl{device_number}"    
+
+
+def rapl_new(device_number, module = "package"):
+    return f"intel-rapl:{device_number}/{module}"
 
 def nvml(device_number):
     return f"nvml{device_number}"

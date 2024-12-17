@@ -15,7 +15,7 @@ static bool initialized = false;
 void start(const std::set<std::string> devices, const double conversion_factor){
 
     if(initialized){
-        throw std::runtime_error( "Pyeml already started" );
+        throw std::runtime_error( "PyEML already started" );
     }
 
     emlInit();
@@ -45,8 +45,13 @@ void start(const std::set<std::string> devices, const double conversion_factor){
     py::gil_scoped_release release;
 }
 
+
 std::unordered_map<std::string, std::unordered_map<std::string,double>> stop(){
     size_t count;
+
+    if(!initialized){
+        throw std::runtime_error( "PyEML not started" );
+    }
 
     if(eml_devices.empty()){
         emlDeviceGetCount(&count);

@@ -18,6 +18,8 @@ from timeit import default_timer as timer
 
 EML_LIB_PATH = "/usr/local/lib"
 
+eml_started = False
+
 #Appending eml in LD_LIBRARY_PATH (if its needed)
 if EML_LIB_PATH not in os.getenv('LD_LIBRARY_PATH',""):
     os.environ["LD_LIBRARY_PATH"] = os.getenv('LD_LIBRARY_PATH',"") + ":" + EML_LIB_PATH
@@ -42,6 +44,7 @@ atexit.register(shutdown)
 
 
 def start(devices : Union[Iterable,None] = None, unit : Dict = j):
+    global eml_started
     if(devices == None):
         eml.start(conversion_factor = unit["conv"])
     else:
@@ -49,7 +52,13 @@ def start(devices : Union[Iterable,None] = None, unit : Dict = j):
             devices = (devices,)
         eml.start(devices = set(devices),conversion_factor = unit["conv"])
 
+    eml_started = True
+
 def stop():
+    global eml_started
+    if(not eml_started):
+        raise Exception("EML is not started")
+    eml_started = False
     return eml.stop()
 
 def get_devices():
